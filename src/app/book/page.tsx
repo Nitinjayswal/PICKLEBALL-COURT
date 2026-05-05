@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { SITE_NAME } from "@/lib/site-brand";
 import {
   buildSlotsForDay,
   formatLocalDate,
@@ -70,7 +71,7 @@ export default function BookPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Booking failed");
-      setDone("You are booked. See you on the court.");
+      setDone("You are booked. See you at Pickolo.");
       setName("");
       setEmail("");
       setPhone("");
@@ -92,7 +93,8 @@ export default function BookPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-stone-900">Book a session</h1>
         <p className="mt-2 text-sm text-stone-600">
-          One-hour slots. Pick a day, choose an open time, and confirm your contact details.
+          {SITE_NAME} — one-hour slots. Pick a day, choose an open time, and confirm your contact
+          details.
         </p>
       </div>
 

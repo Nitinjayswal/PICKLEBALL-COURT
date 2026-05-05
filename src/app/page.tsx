@@ -1,18 +1,20 @@
 import Link from "next/link";
+import { SITE_ADDRESS, SITE_NAME, SITE_TAGLINE } from "@/lib/site-brand";
 
 export default function HomePage() {
   return (
     <div className="space-y-10">
       <section className="rounded-2xl bg-gradient-to-br from-[var(--court-green)] to-[var(--court-green-light)] p-8 text-white shadow-lg sm:p-10">
         <p className="text-sm font-medium uppercase tracking-wide text-white/80">
-          Welcome
+          {SITE_NAME} · {SITE_ADDRESS}
         </p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-          Reserve a session on the court
+          Reserve a session at {SITE_NAME}
         </h1>
+        <p className="mt-2 text-sm font-medium text-white/85">{SITE_TAGLINE}</p>
         <p className="mt-4 max-w-2xl text-base text-white/90">
-          Pick a time that works for you, send a note if you need anything special, and
-          reach us by email or WhatsApp if you have questions before you book.
+          Pick a time that works for you, send a note if you need anything special, and reach us by
+          email or WhatsApp if you have questions before you book.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link

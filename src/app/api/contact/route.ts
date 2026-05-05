@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServiceSupabase } from "@/lib/supabase/admin";
+import { DEFAULT_EMAIL_FROM, SITE_NAME } from "@/lib/site-brand";
 import { SITE_OWNER_EMAIL, SITE_WHATSAPP_E164 } from "@/lib/site-contact";
 
 function buildWhatsAppPrefill(message: string, phoneE164: string) {
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
 
   const ownerEmail = process.env.OWNER_EMAIL?.trim() || SITE_OWNER_EMAIL;
   const resendKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM || "Court <onboarding@resend.dev>";
+  const from = process.env.EMAIL_FROM || DEFAULT_EMAIL_FROM;
   const wa = process.env.NEXT_PUBLIC_WHATSAPP_E164?.trim() || SITE_WHATSAPP_E164;
 
   const lines = [
@@ -81,7 +82,7 @@ export async function POST(request: Request) {
       from,
       to: [ownerEmail],
       reply_to: email.trim(),
-      subject: `Court inquiry from ${name.trim()}`,
+      subject: `${SITE_NAME} inquiry from ${name.trim()}`,
       html: htmlBody,
       text: textBody,
     }),

@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import { getServiceSupabase } from "@/lib/supabase/admin";
+import { SITE_NAME, DEFAULT_EMAIL_FROM } from "@/lib/site-brand";
+import { SITE_OWNER_EMAIL } from "@/lib/site-contact";
 import {
   buildSlotsForDay,
   formatLocalDate,
+  formatSlotLabel,
   parseLocalDate,
 } from "@/lib/slots";
 
@@ -167,7 +170,56 @@ export async function POST(request: Request) {
       throw error;
     }
 
-    return NextResponse.json({ ok: true, id: data?.id });
+    const bookingId = data?.id as string | undefined;
+    const resendKey = process.env.RESEND_API_KEY?.trim();
+    const ownerEmail = process.env.OWNER_EMAIL?.trim() || SITE_OWNER_EMAIL;
+    const from = process.env.EMAIL_FROM || DEFAULT_EMAIL_FROM;
+
+    let ownerNotified = false;
+    if (resendKey && bookingId) {
+      const dateLine = formatLocalDate(day);
+      const timeLine = `${formatSlotLabel(start)} – ${formatSlotLabel(end)}`;
+      const lines = [
+        `New booking at ${SITE_NAME}`,
+        "",
+        `Date: ${dateLine}`,
+        `Time: ${timeLine}`,
+        "",
+        `Name: ${name.trim()}`,
+        `Email: ${email.trim()}`,
+        `Phone: ${phone.trim()}`,
+        notes?.trim() ? `Notes: ${notes.trim()}` : null,
+        "",
+        `Booking id: ${bookingId}`,
+      ].filter(Boolean) as string[];
+      const textBody = lines.join("\n");
+      const htmlBody = `<pre style="font-family:system-ui">${textBody.replace(/</g, "&lt;")}</pre>`;
+      try {
+        const res = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${resendKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from,
+            to: [ownerEmail],
+            reply_to: email.trim(),
+            subject: `${SITE_NAME} booking: ${dateLine} ${formatSlotLabel(start)}`,
+            html: htmlBody,
+            text: textBody,
+          }),
+        });
+        ownerNotified = res.ok;
+        if (!res.ok) {
+          console.error("[bookings] owner notify email failed", await res.text());
+        }
+      } catch (err) {
+        console.error("[bookings] owner notify email error", err);
+      }
+    }
+
+    return NextResponse.json({ ok: true, id: bookingId, ownerNotified });
   } catch (e) {
     return NextResponse.json({ error: routeErrorMessage(e) }, { status: 500 });
   }

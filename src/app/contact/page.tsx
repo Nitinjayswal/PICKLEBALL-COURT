@@ -62,7 +62,7 @@ export default function ContactPage() {
     .filter(Boolean)
     .join("\n");
 
-  const quickWa = waLink("Hi — I have a question about the pickleball court.");
+  const quickWa = waLink("Hi — I have a question about Pickolo.");
 
   return (
     <div className="mx-auto max-w-xl space-y-8">

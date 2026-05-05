@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { SITE_NAME } from "@/lib/site-brand";
 
 type Booking = {
   id: string;
@@ -68,7 +69,9 @@ export default function AdminPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-stone-900">Owner dashboard</h1>
+      <h1 className="text-2xl font-bold text-stone-900">
+        {SITE_NAME} — owner dashboard
+      </h1>
 
       {!loggedIn && (
         <form onSubmit={login} className="max-w-sm space-y-3 rounded-xl border bg-white p-5 shadow-sm">
