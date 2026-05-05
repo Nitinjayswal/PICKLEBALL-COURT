@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { SITE_OWNER_EMAIL, SITE_WHATSAPP_E164 } from "@/lib/site-contact";
 
 function waLink(prefill: string) {
-  const raw = process.env.NEXT_PUBLIC_WHATSAPP_E164;
+  const raw = process.env.NEXT_PUBLIC_WHATSAPP_E164 ?? SITE_WHATSAPP_E164;
   if (!raw) return null;
   const digits = raw.replace(/\D/g, "");
   if (!digits) return null;
@@ -68,9 +69,11 @@ export default function ContactPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-stone-900">Contact</h1>
         <p className="mt-2 text-sm text-stone-600">
-          Send an email through the form, or message on WhatsApp. Replace placeholders in{" "}
-          <code className="rounded bg-stone-100 px-1 text-xs">.env.local</code> with real values
-          before going live.
+          Send a message through the form, email{" "}
+          <a className="font-medium text-emerald-800 underline" href={`mailto:${SITE_OWNER_EMAIL}`}>
+            {SITE_OWNER_EMAIL}
+          </a>
+          , or use WhatsApp below.
         </p>
       </div>
 
@@ -168,13 +171,6 @@ export default function ContactPage() {
           </a>
         )}
       </form>
-
-      {!quickWa && (
-        <p className="text-xs text-stone-500">
-          Set <code className="rounded bg-stone-100 px-1">NEXT_PUBLIC_WHATSAPP_E164</code> (digits
-          only, include country code) to show WhatsApp shortcuts.
-        </p>
-      )}
 
       {quickWa && draft.trim().length > 10 && (
         <a

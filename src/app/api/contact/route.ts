@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServiceSupabase } from "@/lib/supabase/admin";
+import { SITE_OWNER_EMAIL, SITE_WHATSAPP_E164 } from "@/lib/site-contact";
 
 function buildWhatsAppPrefill(message: string, phoneE164: string) {
   const text = encodeURIComponent(message);
@@ -29,10 +30,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Name, email, and message are required" }, { status: 400 });
   }
 
-  const ownerEmail = process.env.OWNER_EMAIL;
+  const ownerEmail = process.env.OWNER_EMAIL?.trim() || SITE_OWNER_EMAIL;
   const resendKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM || "Court <onboarding@resend.dev>";
-  const wa = process.env.NEXT_PUBLIC_WHATSAPP_E164;
+  const wa = process.env.NEXT_PUBLIC_WHATSAPP_E164?.trim() || SITE_WHATSAPP_E164;
 
   const lines = [
     `Name: ${name.trim()}`,
@@ -57,13 +58,6 @@ export async function POST(request: Request) {
     } catch {
       /* optional table — ignore if missing or misconfigured */
     }
-  }
-
-  if (!ownerEmail) {
-    return NextResponse.json(
-      { error: "OWNER_EMAIL is not configured on the server" },
-      { status: 503 },
-    );
   }
 
   if (!resendKey) {
