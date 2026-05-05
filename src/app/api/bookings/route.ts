@@ -8,6 +8,21 @@ import {
 
 const COURT_ID = "main";
 
+/** Supabase / PostgREST errors are often plain objects, not `Error` instances. */
+function routeErrorMessage(e: unknown): string {
+  if (e instanceof Error) return e.message;
+  if (typeof e === "string" && e.length > 0) return e;
+  if (typeof e === "object" && e !== null) {
+    const o = e as Record<string, unknown>;
+    if (typeof o.message === "string" && o.message.length > 0) return o.message;
+    if (typeof o.error_description === "string" && o.error_description.length > 0) {
+      return o.error_description;
+    }
+    if (typeof o.hint === "string" && o.hint.length > 0) return o.hint;
+  }
+  return "Server error";
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const date = searchParams.get("date");
@@ -65,8 +80,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ date: formatLocalDate(day), slots });
   } catch (e) {
-    const message = e instanceof Error ? e.message : "Server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: routeErrorMessage(e) }, { status: 500 });
   }
 }
 
@@ -155,7 +169,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true, id: data?.id });
   } catch (e) {
-    const message = e instanceof Error ? e.message : "Server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: routeErrorMessage(e) }, { status: 500 });
   }
 }
