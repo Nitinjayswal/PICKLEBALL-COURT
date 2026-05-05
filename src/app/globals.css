@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+:root {
+  --court-green: #0d5c2e;
+  --court-green-light: #1a8f4a;
+  --court-cream: #f6f3ea;
+  --court-navy: #0f172a;
+}
+
+body {
+  @apply bg-stone-50 text-stone-900 antialiased;
+}
