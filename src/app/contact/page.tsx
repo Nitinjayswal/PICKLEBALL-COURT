@@ -4,7 +4,7 @@ import { useState } from "react";
 import { SITE_OWNER_EMAIL, SITE_WHATSAPP_E164 } from "@/lib/site-contact";
 
 function waLink(prefill: string) {
-  const raw = process.env.NEXT_PUBLIC_WHATSAPP_E164 ?? SITE_WHATSAPP_E164;
+  const raw = process.env.NEXT_PUBLIC_WHATSAPP_E164?.trim() || SITE_WHATSAPP_E164;
   if (!raw) return null;
   const digits = raw.replace(/\D/g, "");
   if (!digits) return null;
